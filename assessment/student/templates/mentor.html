@@ -1,0 +1,111 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/mentor.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">MyAssessment</div>
+        <div class="user-info">
+            <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
+            <div class="user-avatar">A</div>
+            <span><b>{{ user.username }}</b></span>
+            <form method="post" style="display:inline;">{% csrf_token %}
+                <button class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar">
+        <a href="/student/"><i class="fa fa-home"></i> Home</a>
+        <a href="/student/test"><i class="fa fa-pen"></i> Test</a>
+        <a href="/student/view_mentor/" class="active"><i class="fa fa-user-tie"></i> Mentor</a>
+        <a href="/student/history/"><i class="fa fa-history"></i> History</a>
+        <a href="/student/announcement"><i class="fa fa-bullhorn"></i> Announcements</a>
+        <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
+    </div>
+    <div class="content">
+        <h1>Your Mentors <span>👨‍🏫</span></h1>
+        <div class="mentor-cards-flex">
+            <!-- Example Mentor Card -->
+            <div class="mentor-card">
+                <div class="mentor-summary">
+                    <div class="mentor-avatar">R</div>
+                    <div class="mentor-info">
+                        <div class="mentor-name">Dr. Rakesh Sharma</div>
+                        <div class="mentor-meta">
+                            <span class="mentor-tests"><i class="fa fa-pen"></i> 5 Tests</span>
+                            <span class="mentor-avg"><i class="fa fa-chart-line"></i> 82% Avg</span>
+                        </div>
+                    </div>
+                    <button class="show-profile-btn">Show Profile</button>
+                </div>
+                <div class="mentor-details">
+                    <div><b>Name:</b> Dr. Rakesh Sharma</div>
+                    <div><b>Post:</b> Professor</div>
+                    <div><b>Subject:</b> Data Structures</div>
+                    <div><b>College:</b> LNCT</div>
+                    <div><b>Email:</b> rakesh.sharma@lnct.ac.in</div>
+                    <div><b>Experience:</b> 12 Years</div>
+                </div>
+            </div>
+            <!-- Repeat mentor-card for each mentor -->
+            <div class="mentor-card">
+                <div class="mentor-summary">
+                    <div class="mentor-avatar">S</div>
+                    <div class="mentor-info">
+                        <div class="mentor-name">Ms. Shweta Verma</div>
+                        <div class="mentor-meta">
+                            <span class="mentor-tests"><i class="fa fa-pen"></i> 3 Tests</span>
+                            <span class="mentor-avg"><i class="fa fa-chart-line"></i> 76% Avg</span>
+                        </div>
+                    </div>
+                    <button class="show-profile-btn">Show Profile</button>
+                </div>
+                <div class="mentor-details">
+                    <div><b>Name:</b> Ms. Shweta Verma</div>
+                    <div><b>Post:</b> Assistant Professor</div>
+                    <div><b>Subject:</b> Algorithms</div>
+                    <div><b>College:</b> LNCTS</div>
+                    <div><b>Email:</b> shweta.verma@lncts.ac.in</div>
+                    <div><b>Experience:</b> 7 Years</div>
+                </div>
+            </div>
+            <div class="mentor-card">
+                <div class="mentor-summary">
+                    <div class="mentor-avatar">S</div>
+                    <div class="mentor-info">
+                        <div class="mentor-name">Ms. Shweta Verma</div>
+                        <div class="mentor-meta">
+                            <span class="mentor-tests"><i class="fa fa-pen"></i> 3 Tests</span>
+                            <span class="mentor-avg"><i class="fa fa-chart-line"></i> 76% Avg</span>
+                        </div>
+                    </div>
+                    <button class="show-profile-btn">Show Profile</button>
+                </div>
+                <div class="mentor-details">
+                    <div><b>Name:</b> Ms. Shweta Verma</div>
+                    <div><b>Post:</b> Assistant Professor</div>
+                    <div><b>Subject:</b> Algorithms</div>
+                    <div><b>College:</b> LNCTS</div>
+                    <div><b>Email:</b> shweta.verma@lncts.ac.in</div>
+                    <div><b>Experience:</b> 7 Years</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.show-profile-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.mentor-card');
+                card.classList.toggle('expanded');
+                this.textContent = card.classList.contains('expanded') ? 'Hide Profile' : 'Show Profile';
+            });
+        });
+    </script>
+</body>
+</html>

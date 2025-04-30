@@ -1,0 +1,159 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/history.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">MyAssessment</div>
+        <div class="user-info">
+            <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
+            <div class="user-avatar">A</div>
+            <span><b>{{ user.username }}</b></span>
+            <form method="post" style="display:inline;">{% csrf_token %}
+                <button class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar">
+        <a href="/student/"><i class="fa fa-home"></i> Home</a>
+        <a href="/student/test"><i class="fa fa-pen"></i> Test</a>
+        <a href="/student/view_mentor/"><i class="fa fa-user-tie"></i> Mentor</a>
+        <a href="/student/history/" class="active"><i class="fa fa-history"></i> History</a>
+        <a href="/student/announcement"><i class="fa fa-bullhorn"></i> Announcements</a>
+        <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
+    </div>
+    <div class="content">
+        <h1>Test History <i class="fa fa-history" style="color:#6366f1"></i></h1>
+        <!-- Analysis Summary -->
+        <div class="history-summary-cards">
+            <div class="history-summary-card">
+                <div class="summary-title"><i class="fa fa-list-check"></i> Total Tests</div>
+                <div class="summary-value" id="totalTests">0</div>
+            </div>
+            <div class="history-summary-card">
+                <div class="summary-title"><i class="fa fa-percentage"></i> Average %</div>
+                <div class="summary-value" id="avgPercent">0%</div>
+            </div>
+            <div class="history-summary-card">
+                <div class="summary-title"><i class="fa fa-trophy"></i> Best Rank</div>
+                <div class="summary-value" id="bestRank">-</div>
+            </div>
+        </div>
+
+        <!-- Performance Graph -->
+        <div class="history-graph-card">
+            <canvas id="performanceChart" height="120"></canvas>
+        </div>
+
+        <!-- Test Cards -->
+        <div class="history-cards-flex" id="historyCards">
+            <!-- Example Test Card (will be filled by JS) -->
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const testHistory = [
+            {
+                testId: "A1B2C3D4",
+                testName: "Data Structures Quiz",
+                date: "2024-04-01",
+                score: 18,
+                total: 20,
+                percent: 90,
+                rank: 2
+            },
+            {
+                testId: "E5F6A7B8",
+                testName: "Algorithms Midterm",
+                date: "2024-04-15",
+                score: 15,
+                total: 20,
+                percent: 75,
+                rank: 5
+            },
+            {
+                testId: "C9D0E1F2",
+                testName: "DBMS Test",
+                date: "2024-05-01",
+                score: 19,
+                total: 20,
+                percent: 95,
+                rank: 1
+            },
+            {
+                testId: "1234ABCD",
+                testName: "OS Final",
+                date: "2024-05-20",
+                score: 16,
+                total: 20,
+                percent: 80,
+                rank: 3
+            }
+        ];
+
+        // Fill summary
+        document.getElementById('totalTests').textContent = testHistory.length;
+        const avg = Math.round(testHistory.reduce((a, t) => a + t.percent, 0) / testHistory.length);
+        document.getElementById('avgPercent').textContent = avg + "%";
+        document.getElementById('bestRank').textContent = Math.min(...testHistory.map(t => t.rank));
+
+        // Fill test cards
+        const historyCards = document.getElementById('historyCards');
+        testHistory.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'history-card';
+            card.innerHTML = `
+                <div class="history-card-header">
+                    <span class="history-test-name">${test.testName}</span>
+                    <span class="history-test-date"><i class="fa fa-calendar"></i> ${test.date}</span>
+                </div>
+                <div class="history-card-details">
+                    <div><b>Test ID:</b> <span class="test-id">${test.testId}</span></div>
+                    <div><b>Score:</b> ${test.score} / ${test.total}</div>
+                    <div><b>Percentage:</b> ${test.percent}%</div>
+                    <div><b>Rank:</b> ${test.rank}</div>
+                </div>
+            `;
+            historyCards.appendChild(card);
+        });
+
+        // Chart.js graph
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: testHistory.map(t => t.date),
+                datasets: [{
+                    label: 'Percentage',
+                    data: testHistory.map(t => t.percent),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99,102,241,0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#6366f1',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { stepSize: 10 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

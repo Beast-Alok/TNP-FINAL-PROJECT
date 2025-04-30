@@ -1,0 +1,97 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/announcements.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">MyAssessment</div>
+        <div class="user-info">
+            <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
+            <div class="user-avatar">A</div>
+            <span><b>{{ user.username }}</b></span>
+            <form method="post" style="display:inline;">{% csrf_token %}
+                <button class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar">
+        <a href="/student/"><i class="fa fa-home"></i> Home</a>
+        <a href="/student/test"><i class="fa fa-pen"></i> Test</a>
+        <a href="/student/view_mentor/"><i class="fa fa-user-tie"></i> Mentor</a>
+        <a href="/student/history/"><i class="fa fa-history"></i> History</a>
+        <a href="/student/announcement" class="active"><i class="fa fa-bullhorn"></i> Announcements</a>
+        <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
+    </div>
+    <div class="content">
+        <h1>Announcements <i class="fa fa-bullhorn" style="color:#6366f1"></i></h1>
+        <div class="announcements-flex" id="announcementsList">
+            <!-- Announcement cards will be injected here -->
+        </div>
+    </div>
+    <script>
+    // Example announcements data (replace with your fetch logic)
+    const announcements = [
+        {
+            author: "Dr. Rakesh Sharma",
+            avatar: "R",
+            date: "2024-04-28",
+            content: "Congratulations to all students who participated in the recent coding contest! 🎉\n\nDon't forget to check the leaderboard and claim your certificates from the mentor's desk."
+        },
+        {
+            author: "Ms. Shweta Verma",
+            avatar: "S",
+            date: "2024-04-26",
+            content: "Upcoming test on Algorithms will be held on 2nd May. Please revise all sorting and searching algorithms. Best of luck!"
+        },
+        {
+            author: "Dev Team",
+            avatar: "D",
+            date: "2024-04-25",
+            content: "🚀 New Feature: You can now view your performance graph in the History section. More analytics coming soon!"
+        },
+        {
+            author: "Dr. Rakesh Sharma",
+            avatar: "R",
+            date: "2024-04-28",
+            content: "Congratulations to all students who participated in the recent coding contest! 🎉\n\nDon't forget to check the leaderboard and claim your certificates from the mentor's desk."
+        },
+        {
+            author: "Ms. Shweta Verma",
+            avatar: "S",
+            date: "2024-04-26",
+            content: "Upcoming test on Algorithms will be held on 2nd May. Please revise all sorting and searching algorithms. Best of luck!"
+        },
+        {
+            author: "Dev Team",
+            avatar: "D",
+            date: "2024-04-25",
+            content: "🚀 New Feature: You can now view your performance graph in the History section. More analytics coming soon!"
+        }
+    ];
+
+    // Render announcements
+    const list = document.getElementById('announcementsList');
+    announcements.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'announcement-card';
+        card.innerHTML = `
+            <div class="announcement-author">
+                <div class="announcement-avatar">${a.avatar}</div>
+                <div class="announcement-author-info">
+                    <span class="announcement-author-name">${a.author}</span>
+                    <span class="announcement-date"><i class="fa fa-calendar"></i> ${a.date}</span>
+                </div>
+            </div>
+            <div class="announcement-content">${a.content.replace(/\n/g, '<br>')}</div>
+        `;
+        list.appendChild(card);
+    });
+    </script>
+</body>
+</html>

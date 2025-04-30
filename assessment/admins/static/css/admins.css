@@ -1,0 +1,175 @@
+/* Ensure the body and html take up the full viewport height */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.2); /* Transparent background */
+    backdrop-filter: blur(10px); /* Blurred effect */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.admin-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-form input {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    color: #333;
+    width: 300px;
+}
+
+.search-form button {
+    padding: 0.75rem 1.5rem;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Scrollable container for student cards */
+.student-cards-container {
+    max-height: 400px; /* Set a max height for the scrollable area */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Add spacing between cards */
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.2); /* Transparent background */
+    backdrop-filter: blur(10px); /* Blurred effect */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.student-card {
+    display: flex; /* Use flexbox to create two columns */
+    align-items: center;
+    gap: 1rem; /* Add spacing between the picture and details */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Set a maximum width for the card */
+    margin: 0 auto; /* Center the card horizontally */
+}
+
+.student-picture-container {
+    flex: 0 0 150px; /* Fix the width of the picture column */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.student-picture {
+    width: 235px;
+    height: 365px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.student-details {
+    min-width: 350px;
+    flex: 1; /* Allow the details column to take the remaining space */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Add spacing between details */
+    color: #333;
+}
+
+.student-details p {
+    margin: 0;
+}
+
+.student-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.admit-btn,
+.reject-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.admit-btn {
+    background-color: #4caf50; /* Green for accept */
+    color: white;
+}
+
+.admit-btn:hover {
+    background-color: #45a049;
+}
+
+.reject-btn {
+    background-color: #f44336; /* Red for reject */
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #e53935;
+}
+
+/* Footer remains fixed at the bottom */
+.footer {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.2); /* Transparent background similar to navbar */
+    backdrop-filter: blur(10px); /* Blurred effect */
+    color: #333; /* Darker text color for footer text */
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    font-size: 0.9rem; /* Slightly smaller font size */
+    box-sizing: border-box; /* Ensure padding is included in width calculations */
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages .success {
+    color: green;
+}
+
+.messages .error {
+    color: red;
+}

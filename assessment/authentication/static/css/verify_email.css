@@ -1,0 +1,26 @@
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages .success {
+    color: green;
+}
+
+.messages .error {
+    color: red;
+}
+@media (min-width: 768px) {
+    .register-form {
+        grid-template-columns: 1fr 1fr; /* Three columns for larger screens */
+        gap: 1.5rem;
+    }
+
+    .password-container {
+        grid-column: span 1; /* Make the password field span both columns */
+    }
+
+    .login-btn {
+        grid-column: span 1; /* Center the Register button across both columns */
+    }
+}

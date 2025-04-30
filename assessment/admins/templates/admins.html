@@ -1,0 +1,77 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Panel</title>
+    <link rel="stylesheet" href="{% static 'css/admins.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="shortcut icon" href="{% static 'assets/logo.ico' %}" type="image/x-icon">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{% static 'assets/logo.png' %}" alt="Logo" class="logo-img" style="height: auto; max-height: 50px;">
+        </div>
+        
+        <div>
+            <button class="admin-login-btn"  onclick="window.location.href='mentor_invite/';">Mentor Invite</button>
+            <button class="admin-login-btn">Logout</button>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="admin-container">
+        <h2>Student Management</h2>
+        <form class="search-form">
+            <input type="text" id="search" placeholder="Search by name or college" />
+            <button type="button" class="search-btn">Search</button>
+        </form>
+
+        <div class="student-cards-container">
+            <!-- Example Student Card -->
+            {% for user in verified_users %}
+            <div class="student-card">
+                <div class="student-picture-container">
+                    <img src="{{ user.college_id.url }}" alt="Student Picture" class="student-picture">
+                </div>
+                <div class="student-details">
+                    <p><strong>Name:</strong> {{ user.user.first_name }}</p>
+                    <p><strong>Enrollment Number:</strong> {{ user.enrollment_number }}</p>
+                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+                    <p><strong>College:</strong> {{ user.college }}</p>
+                    <p><strong>Branch:</strong> {{ user.branch }}</p>
+                    <p><strong>Year:</strong> {{ user.year_of_study }}</p>
+                    <p><strong>Username:</strong> {{ user.user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.user.email }}</p>
+                    <div class="student-actions">
+                        <form method="POST" action="{% url 'approve_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="admit-btn">Accept</button>
+                        </form>
+                        <form method="POST" action="{% url 'reject_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="reject-btn">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p style="color: red;">No users found for approval</p>
+            {% endfor %}
+            <!-- Repeat for more student cards -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>All copyrights are to LNCT</p>
+    </footer>
+</body>
+</html>

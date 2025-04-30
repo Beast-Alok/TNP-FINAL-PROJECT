@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+    <link rel="stylesheet" href="{% static 'css/verify_email.css' %}">
+    <link rel="shortcut icon" href="{% static 'assets/logo.ico' %}" type="image/x-icon">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{% static 'assets/logo.png' %}" alt="Logo" class="logo-img" style="height: auto; max-height: 50px;">
+        </div>
+        <div>
+            <button class="admin-login-btn" onclick="window.location.href='/admin';">Admin Login</button>
+            <button class="admin-login-btn" onclick="window.location.href='/auth/login';">Login</button>
+        </div>
+    </nav>
+
+    <div class="login-container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="login-form">
+            <h2>Verify Your Email</h2>
+            <form class="register-form" action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="code">Enter Verification Code:</label>
+                    <input type="text" id="code" name="code" placeholder="Enter your verification code" required>
+                </div>
+                <button type="submit" class="login-btn">Verify</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>All copyrights are to LNCT</p>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

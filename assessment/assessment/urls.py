@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', include('admins.urls')),
     path('student/', include('student.urls')),
     path('mentor/', include('mentor.urls')),
+    path('livetestportal/', include('testportal.urls')),
 ]
 
 # Serve media files during development

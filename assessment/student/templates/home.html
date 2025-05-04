@@ -15,7 +15,7 @@
             <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
             <div class="user-avatar">A</div>
             <span><b>{{ user.username }}</b></span>
-            <form method="post" style="display:inline;">{% csrf_token %}
+            <form method="post" style="display:inline;" action="/auth/logout/">{% csrf_token %}
                 <button class="logout-btn">Logout</button>
             </form>
         </div>
@@ -29,25 +29,36 @@
         <a href="community/"><i class="fa fa-users"></i> Community</a>
     </div>
     <div class="content">
-        <h1>Welcome back, {{ user.first_name }} <span>👋</span></h1>
-        <div class="profile-card">
-            <div class="profile-header">
-                <!-- <div class="profile-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
-                <div class="profile-avatar">A</div>
-                <h2>Your Profile</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card mb-4" style="max-width: 500px; margin: 40px auto;">
+                    <div class="card-body text-center">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <span class="fs-5">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% elif user %}
+            <h1>Welcome back, {{ user.first_name }} <span>👋</span></h1>
+            <div class="profile-card">
+                <div class="profile-header">
+                    <!-- <div class="profile-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
+                    <div class="profile-avatar">A</div>
+                    <h2>Your Profile</h2>
+                </div>
+                <div class="profile-item"><span class="profile-label">Name:</span> {{ user.first_name }}</div>
+                <div class="profile-item"><span class="profile-label">Email:</span> {{ user.email }}</div>
+                <div class="profile-item"><span class="profile-label">Enrollment:</span> {{ profile.enrollment_number }}</div>
+                <div class="profile-item"><span class="profile-label">College:</span> {{ profile.college }}</div>
+                <div class="profile-item"><span class="profile-label">Branch:</span> {{ profile.branch }}</div>
+                <div class="profile-item"><span class="profile-label">Year:</span> {{ profile.year_of_study }}</div>
             </div>
-            <div class="profile-item"><span class="profile-label">Name:</span> {{ user.first_name }}</div>
-            <div class="profile-item"><span class="profile-label">Email:</span> {{ user.email }}</div>
-            <div class="profile-item"><span class="profile-label">Enrollment:</span> {{ profile.enrollment_number }}</div>
-            <div class="profile-item"><span class="profile-label">College:</span> {{ profile.college }}</div>
-            <div class="profile-item"><span class="profile-label">Branch:</span> {{ profile.branch }}</div>
-            <div class="profile-item"><span class="profile-label">Year:</span> {{ profile.year_of_study }}</div>
-        </div>
-        <div class="quotes-card" id="quotesCard">
-            <div class="quotes-icon"><i class="fa fa-quote-left"></i></div>
-            <div class="quote-text" id="quoteText">Loading...</div>
-            <div class="quote-author" id="quoteAuthor"></div>
-        </div>
+            <div class="quotes-card" id="quotesCard">
+                <div class="quotes-icon"><i class="fa fa-quote-left"></i></div>
+                <div class="quote-text" id="quoteText">Loading...</div>
+                <div class="quote-author" id="quoteAuthor"></div>
+            </div>
+        {% endif %}
     </div>
     <script>
         const quotes = [

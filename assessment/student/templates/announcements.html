@@ -15,7 +15,7 @@
             <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
             <div class="user-avatar">A</div>
             <span><b>{{ user.username }}</b></span>
-            <form method="post" style="display:inline;">{% csrf_token %}
+            <form method="post" style="display:inline;" action="/auth/logout/">{% csrf_token %}
                 <button class="logout-btn">Logout</button>
             </form>
         </div>
@@ -29,10 +29,21 @@
         <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
     </div>
     <div class="content">
-        <h1>Announcements <i class="fa fa-bullhorn" style="color:#6366f1"></i></h1>
-        <div class="announcements-flex" id="announcementsList">
-            <!-- Announcement cards will be injected here -->
-        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card mb-4" style="max-width: 500px; margin: 40px auto;">
+                    <div class="card-body text-center">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <span class="fs-5">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% elif user %}
+            <h1>Announcements <i class="fa fa-bullhorn" style="color:#6366f1"></i></h1>
+            <div class="announcements-flex" id="announcementsList">
+                <!-- Announcement cards will be injected here -->
+            </div>
+        {% endif %}
     </div>
     <script>
     // Example announcements data (replace with your fetch logic)

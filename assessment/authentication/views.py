@@ -20,28 +20,45 @@ def login_fun(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        mentor_login = request.POST.get('mentorLogin')  # Check if the checkbox is selected
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
             try:
-                profile = StudentProfile.objects.get(user=user)
-                if profile.is_verified:  # Check is_verified from StudentProfile
-                    if not profile.is_approved:
-                        messages.error(request, "Your account is not approved yet. Please wait for admin approval")
-                        return redirect('login')  # Redirect back to the login page
-                    else:
+                if mentor_login:  # If the checkbox is selected
+                    # Check if the user is a mentor (you may need a MentorProfile model or a flag in the User model)
+                    if hasattr(user, 'mentorprofile'):  # Example check for a MentorProfile
                         login(request, user)
-                        messages.success(request, "Login successful!")
-                        return redirect('home')  # Redirect to the home page or another page
+                        # messages.success(request, "Mentor login successful!")
+                        return redirect('mentorhome')  # Redirect to the mentor page
+                    else:
+                        messages.error(request, "You are not registered as a mentor.")
+                        return redirect('login')
                 else:
-                    messages.error(request, "Your email is not verified. Please verify your email")
-                    return redirect('login')  # Redirect back to the login page
+                    # Handle student login
+                    if hasattr(user, 'studentprofile'):  # Example check for a StudentProfile
+                        profile = StudentProfile.objects.get(user=user)
+                        if profile.is_verified:
+                            if not profile.is_approved:
+                                messages.error(request, "Your account is not approved yet. Please wait for admin approval.")
+                                return redirect('login')
+                            else:
+                                login(request, user)
+                                return redirect('home')  # Redirect to the home page
+                        else:
+                            messages.error(request, "Your email is not verified. Please verify your email.")
+                            return redirect('login')
+                    
+                    elif not hasattr(user, 'studentprofile') and not hasattr(user, 'mentorprofile'):
+                        login(request, user)
+                        return redirect('admin_home') # Redirect to admin home if the user is neither a student nor a mentor
+            
             except StudentProfile.DoesNotExist:
-                messages.error(request, "User profile not found. Please contact support")
-                return redirect('login')  # Redirect back to the login page
+                messages.error(request, "User profile not found. Please contact support.")
+                return redirect('login')
         else:
-            messages.error(request, "Invalid username or password")
-            return redirect('login')  # Redirect back to the login page
+            messages.error(request, "Invalid username or password.")
+            return redirect('login')
     return render(request, 'login.html')
 
 def register_fun(request):
@@ -119,7 +136,8 @@ def register_fun(request):
 
 def logout_fun(request):
     logout(request)
-    return redirect('login/')
+    messages.error(request, "You have been logged out")
+    return redirect('/auth/login/')
 
 
 def verify_email(request):

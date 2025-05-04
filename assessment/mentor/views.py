@@ -3,10 +3,48 @@ from admins.models import EmailInvitations
 from .models import MentorProfile
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 # Create your views here.
 
-def home(request):
+@login_required(login_url='/auth/login/')
+def mentorhome(request):
+    if hasattr(request.user, 'mentorprofile'):
+        profile = request.user.mentorprofile
+    else:
+        messages.error(request, "Only mentors can access this page.")
     return render(request, 'mentor_home.html')
+
+
+@login_required(login_url='/auth/login/')
+def take_test(request):
+    profile = None
+    if hasattr(request.user, 'mentorprofile'):
+        profile = request.user.mentorprofile
+    else:
+        messages.error(request, "Only mentors can access this page.")
+    return render(request, 'take_test.html')
+
+
+@login_required(login_url='/auth/login/')
+def view_test(request):
+    profile = None
+    if hasattr(request.user, 'mentorprofile'):
+        profile = request.user.mentorprofile
+    else:
+        messages.error(request, "Only mentors can access this page.")
+    return render(request, 'view_test_reports.html')
+
+
+@login_required(login_url='/auth/login/')
+def mentor_announcements(request):
+    profile = None
+    if hasattr(request.user, 'mentorprofile'):
+        profile = request.user.mentorprofile
+    else:
+        messages.error(request, "Only mentors can access this page.")
+    return render(request, 'mentor_announcements.html')
+
 
 def info(request):
     if request.method == 'POST':
@@ -41,6 +79,7 @@ def info(request):
                 # Optionally, delete the email invitation after use
                 email_invitation.delete()
                 messages.success(request, 'Mentor profile created successfully!')
+                return redirect('login')
             else:
                 messages.error(request, 'Email does not match the verification code.')
         except EmailInvitations.DoesNotExist:

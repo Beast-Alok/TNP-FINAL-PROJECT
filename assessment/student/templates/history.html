@@ -15,7 +15,7 @@
             <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
             <div class="user-avatar">A</div>
             <span><b>{{ user.username }}</b></span>
-            <form method="post" style="display:inline;">{% csrf_token %}
+            <form method="post" style="display:inline;" action="/auth/logout/">{% csrf_token %}
                 <button class="logout-btn">Logout</button>
             </form>
         </div>
@@ -29,32 +29,43 @@
         <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
     </div>
     <div class="content">
-        <h1>Test History <i class="fa fa-history" style="color:#6366f1"></i></h1>
-        <!-- Analysis Summary -->
-        <div class="history-summary-cards">
-            <div class="history-summary-card">
-                <div class="summary-title"><i class="fa fa-list-check"></i> Total Tests</div>
-                <div class="summary-value" id="totalTests">0</div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card mb-4" style="max-width: 500px; margin: 40px auto;">
+                    <div class="card-body text-center">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <span class="fs-5">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% elif user %}
+            <h1>Test History <i class="fa fa-history" style="color:#6366f1"></i></h1>
+            <!-- Analysis Summary -->
+            <div class="history-summary-cards">
+                <div class="history-summary-card">
+                    <div class="summary-title"><i class="fa fa-list-check"></i> Total Tests</div>
+                    <div class="summary-value" id="totalTests">0</div>
+                </div>
+                <div class="history-summary-card">
+                    <div class="summary-title"><i class="fa fa-percentage"></i> Average %</div>
+                    <div class="summary-value" id="avgPercent">0%</div>
+                </div>
+                <div class="history-summary-card">
+                    <div class="summary-title"><i class="fa fa-trophy"></i> Best Rank</div>
+                    <div class="summary-value" id="bestRank">-</div>
+                </div>
             </div>
-            <div class="history-summary-card">
-                <div class="summary-title"><i class="fa fa-percentage"></i> Average %</div>
-                <div class="summary-value" id="avgPercent">0%</div>
-            </div>
-            <div class="history-summary-card">
-                <div class="summary-title"><i class="fa fa-trophy"></i> Best Rank</div>
-                <div class="summary-value" id="bestRank">-</div>
-            </div>
-        </div>
 
-        <!-- Performance Graph -->
-        <div class="history-graph-card">
-            <canvas id="performanceChart" height="120"></canvas>
-        </div>
+            <!-- Performance Graph -->
+            <div class="history-graph-card">
+                <canvas id="performanceChart" height="120"></canvas>
+            </div>
 
-        <!-- Test Cards -->
-        <div class="history-cards-flex" id="historyCards">
-            <!-- Example Test Card (will be filled by JS) -->
-        </div>
+            <!-- Test Cards -->
+            <div class="history-cards-flex" id="historyCards">
+                <!-- Example Test Card (will be filled by JS) -->
+            </div>
+        {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

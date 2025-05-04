@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'authentication',  # Custom authentication app
+    'authentication',
     'admins',
     'student',
     'mentor',
+    'testportal',
     'django_celery_results',
     'django_cleanup.apps.CleanupConfig',
 ]

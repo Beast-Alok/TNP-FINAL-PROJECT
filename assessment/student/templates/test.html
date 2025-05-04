@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/test.css' %}">
+    
 </head>
 <body>
     <div class="navbar">
@@ -15,7 +16,7 @@
             <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
             <div class="user-avatar">A</div>
             <span><b>{{ user.username }}</b></span>
-            <form method="post" style="display:inline;">{% csrf_token %}
+            <form method="post" style="display:inline;" action="/auth/logout/">{% csrf_token %}
                 <button class="logout-btn">Logout</button>
             </form>
         </div>
@@ -29,41 +30,52 @@
         <a href="/student/community/"><i class="fa fa-users"></i> Community</a>
     </div>
     <div class="content">
-        <h1>Start Your Test <span>📝</span></h1>
-        <div class="cards-flex">
-            <!-- Test Rules Card -->
-            <div class="rules-card">
-                <div class="rules-header">
-                    <i class="fa fa-list-check"></i>
-                    <span>Test Rules</span>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card mb-4" style="max-width: 500px; margin: 40px auto;">
+                    <div class="card-body text-center">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <span class="fs-5">{{ message }}</span>
+                    </div>
                 </div>
-                <ul class="rules-list">
-                    <li><i class="fa fa-video"></i> Test will be video and mic proctored, so make sure to grant access to your camera and microphone.</li>
-                    <li><i class="fa fa-desktop"></i> During the test, your screen will be shared with us. Please grant access to capture your screen.</li>
-                    <li><i class="fa fa-ban"></i> Any sort of plagiarism (switching tabs, exiting full screen, etc.) will lead to zero marks and an instant ban from current and upcoming tests.</li>
-                    <li><i class="fa fa-laptop"></i> This test platform is only supported on PC screen size. Please arrange a PC for the test.</li>
-                    <li><i class="fa fa-clock"></i> Complete the test within the allotted time.</li>
-                    <li><i class="fa fa-eye-slash"></i> Do not use unfair means or external help.</li>
-                    <li><i class="fa fa-question-circle"></i> Each question is mandatory.</li>
-                    <li><i class="fa fa-arrow-right"></i> Once submitted, answers cannot be changed.</li>
-                    <li><i class="fa fa-star"></i> Give your best and good luck!</li>
-                </ul>
+            {% endfor %}
+        {% elif user %}
+            <h1>Start Your Test <span>📝</span></h1>
+            <div class="cards-flex">
+                <!-- Test Rules Card -->
+                <div class="rules-card">
+                    <div class="rules-header">
+                        <i class="fa fa-list-check"></i>
+                        <span>Test Rules</span>
+                    </div>
+                    <ul class="rules-list">
+                        <li><i class="fa fa-video"></i> Test will be video and mic proctored, so make sure to grant access to your camera and microphone.</li>
+                        <li><i class="fa fa-desktop"></i> During the test, your screen will be shared with us. Please grant access to capture your screen.</li>
+                        <li><i class="fa fa-ban"></i> Any sort of plagiarism (switching tabs, exiting full screen, etc.) will lead to zero marks and an instant ban from current and upcoming tests.</li>
+                        <li><i class="fa fa-laptop"></i> This test platform is only supported on PC screen size. Please arrange a PC for the test.</li>
+                        <li><i class="fa fa-clock"></i> Complete the test within the allotted time.</li>
+                        <li><i class="fa fa-eye-slash"></i> Do not use unfair means or external help.</li>
+                        <li><i class="fa fa-question-circle"></i> Each question is mandatory.</li>
+                        <li><i class="fa fa-arrow-right"></i> Once submitted, answers cannot be changed.</li>
+                        <li><i class="fa fa-star"></i> Give your best and good luck!</li>
+                    </ul>
+                </div>
+                <!-- Test ID Entry Card -->
+                <div class="testid-card">
+                    <div class="testid-header">
+                        <i class="fa fa-key"></i>
+                        <span>Enter Test ID</span>
+                    </div>
+                    <form class="testid-form" autocomplete="off">
+                        <input type="text" class="testid-input" placeholder="Enter Test ID" required>
+                        <button type="submit" class="testid-btn"><i class="fa fa-arrow-right"></i> Start Test</button>
+                    </form>
+                    <div class="testid-hint">
+                        <i class="fa fa-info-circle"></i> Ask your mentor for the Test ID.
+                    </div>
+                </div>
             </div>
-            <!-- Test ID Entry Card -->
-            <div class="testid-card">
-                <div class="testid-header">
-                    <i class="fa fa-key"></i>
-                    <span>Enter Test ID</span>
-                </div>
-                <form class="testid-form" autocomplete="off">
-                    <input type="text" class="testid-input" placeholder="Enter Test ID" required>
-                    <button type="submit" class="testid-btn"><i class="fa fa-arrow-right"></i> Start Test</button>
-                </form>
-                <div class="testid-hint">
-                    <i class="fa fa-info-circle"></i> Ask your mentor for the Test ID.
-                </div>
-            </div>
-        </div>
+        {% endif %}
     </div>
     <script>
         document.querySelector('.testid-form').addEventListener('submit', function(e) {

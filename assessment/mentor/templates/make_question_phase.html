@@ -1,0 +1,223 @@
+<!-- test_code_display.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Setup - Test Code</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #212529;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+            font-weight: 500;
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            background: #495057;
+            color: #ffc107;
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .dashboard-content {
+            padding: 2rem;
+        }
+        .card {
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.06);
+            border: none;
+            background: #fff;
+            transition: box-shadow 0.2s;
+        }
+        .card .card-body {
+            padding: 2rem 1.5rem;
+        }
+        .test-code-box {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #212529;
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.15em;
+        }
+        .question-card {
+            margin-bottom: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: #f9fafb;
+        }
+        .add-question-btn {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" class="me-2">
+            Mentor Dashboard
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+            <span class="text-white me-3">Welcome, <strong>Mentor</strong></span>
+            <a href="#" class="btn btn-warning btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block sidebar py-4">
+                <div class="nav flex-column">
+                    <a class="nav-link active" href="#">&#9997; Make Test</a>
+                    <a class="nav-link" href="#">&#128221; Take Test</a>
+                    <a class="nav-link" href="#">&#128202; View Test Reports</a>
+                    <a class="nav-link" href="#">&#128227; Announcements</a>
+                </div>
+            </nav>
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto dashboard-content">
+                <h2 class="mb-4">Test Created Successfully!</h2>
+                <div class="mb-4">
+                    <label class="form-label">Generated Test Code</label><br>
+                    <span class="test-code-box" id="testCode">{{ test_code }}</span>
+                </div>
+                <form id="testDetailsForm" class="card p-4 shadow-sm bg-white">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="testDuration" class="form-label">Test Duration (minutes)</label>
+                        <input type="number" name="duration" class="form-control" id="testDuration" min="1" placeholder="Enter duration in minutes" required>
+                    </div>
+                    <hr>
+                    <h5>MCQ Questions</h5>
+                    <div id="questionsContainer"></div>
+                    <button type="button" class="btn btn-outline-primary add-question-btn" id="addQuestionBtn">
+                        <i class="fa fa-plus"></i> Add Question
+                    </button>
+                    <hr>
+                    <button type="submit" class="btn btn-success mt-3">Save Test Details</button>
+                </form>
+            </main>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let questionCount = 0;
+
+        function createQuestionCard(idx) {
+            return `
+            <div class="question-card" id="questionCard${idx}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <div class="mb-3">
+                    <label class="form-label">Question</label>
+                    <input type="text" class="form-control" name="question${idx}" placeholder="Enter question" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Option A</label>
+                        <input type="text" class="form-control" name="option${idx}_1" placeholder="Enter option" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Option B</label>
+                        <input type="text" class="form-control" name="option${idx}_2" placeholder="Enter option" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Option C</label>
+                        <input type="text" class="form-control" name="option${idx}_3" placeholder="Enter option" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Option D</label>
+                        <input type="text" class="form-control" name="option${idx}_4" placeholder="Enter option" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Correct Option (A/B/C/D)</label>
+                    <input type="text" class="form-control" name="correct${idx}" min="1" max="4" placeholder="Enter correct option label" required>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${idx})">
+                    <i class="fa fa-trash"></i> Remove
+                </button>
+            </div>
+            `;
+        }
+
+        document.getElementById('addQuestionBtn').addEventListener('click', function() {
+            questionCount++;
+            const container = document.getElementById('questionsContainer');
+            container.insertAdjacentHTML('beforeend', createQuestionCard(questionCount));
+        });
+
+        function removeQuestion(idx) {
+            const card = document.getElementById('questionCard' + idx);
+            if (card) card.remove();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Example: Set test code dynamically (replace with backend value)
+        // document.getElementById('testCode').textContent = "YOUR_CODE_HERE";
+
+        // Optional: Handle form submission
+        document.getElementById('testDetailsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const duration = form.duration.value;
+            const questions = [];
+            for (let i = 1; i <= questionCount; i++) {
+                const card = document.getElementById('questionCard' + i);
+                if (!card) continue;
+                questions.push({
+                    question: form['question' + i].value,
+                    options: [
+                        form['option' + i + '_1'].value,
+                        form['option' + i + '_2'].value,
+                        form['option' + i + '_3'].value,
+                        form['option' + i + '_4'].value,
+                    ],
+                    correct: form['correct' + i].value
+                });
+            }
+            // Send to backend (example using fetch)
+            fetch('/mentor/save_questions/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({test_code: document.getElementById('testCode').textContent, duration, questions})
+            }).then(res => res.json()).then(data => {
+                alert('Saved!');
+                window.location.href = '/mentor/';
+            });
+        });
+    </script>
+</body>
+</html>

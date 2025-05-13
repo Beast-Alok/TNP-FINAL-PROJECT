@@ -1,0 +1,22 @@
+<div class="community-card">
+    <div class="community-card-header">
+        <div class="user-avatar">{{ doubt.author.first_name|default:doubt.author.username|first|upper }}</div>
+        <span class="community-username">{{ doubt.author.username }}</span>
+        <span class="community-date">{{ doubt.created_at|date:"M d, Y H:i" }}</span>
+    </div>
+    <div class="community-doubt-text">{{ doubt.content|linebreaksbr }}</div>
+    <div class="community-replies">
+        {% for reply in doubt.replies.all %}
+            {% include "partials/reply.html" with reply=reply %}
+        {% empty %}
+            <div class="no-replies">No replies yet.</div>
+        {% endfor %}
+    </div>
+    <!-- Reply Form -->
+    <form method="post" class="reply-form">
+        {% csrf_token %}
+        <input type="hidden" name="doubt_id" value="{{ doubt.id }}">
+        <input type="text" name="reply" class="reply-input" placeholder="Reply to this doubt..." required>
+        <button type="submit" class="reply-btn"><i class="fa fa-reply"></i> Reply</button>
+    </form>
+</div>

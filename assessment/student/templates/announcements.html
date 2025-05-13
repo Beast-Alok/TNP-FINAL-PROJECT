@@ -40,69 +40,25 @@
             {% endfor %}
         {% elif user %}
             <h1>Announcements <i class="fa fa-bullhorn" style="color:#6366f1"></i></h1>
-            <div class="announcements-flex" id="announcementsList">
-                <!-- Announcement cards will be injected here -->
+            <div id="announcementsList">
+                {% for announ in announs %}
+                <div class="announcement-card">
+                    <div class="announcement-author">
+                        <div class="announcement-avatar">
+                            {{ announ.author.name|first|upper }}
+                        </div>
+                        <div class="announcement-author-info">
+                            <span class="announcement-author-name">{{ announ.author }}</span>
+                            <span class="announcement-date"><i class="fa fa-calendar"></i> {{ announ.created_at|date:"Y-m-d H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="announcement-content">{{ announ.message|linebreaksbr }}</div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted mt-4">No announcements yet.</div>
+                {% endfor %}
             </div>
         {% endif %}
     </div>
-    <script>
-    // Example announcements data (replace with your fetch logic)
-    const announcements = [
-        {
-            author: "Dr. Rakesh Sharma",
-            avatar: "R",
-            date: "2024-04-28",
-            content: "Congratulations to all students who participated in the recent coding contest! 🎉\n\nDon't forget to check the leaderboard and claim your certificates from the mentor's desk."
-        },
-        {
-            author: "Ms. Shweta Verma",
-            avatar: "S",
-            date: "2024-04-26",
-            content: "Upcoming test on Algorithms will be held on 2nd May. Please revise all sorting and searching algorithms. Best of luck!"
-        },
-        {
-            author: "Dev Team",
-            avatar: "D",
-            date: "2024-04-25",
-            content: "🚀 New Feature: You can now view your performance graph in the History section. More analytics coming soon!"
-        },
-        {
-            author: "Dr. Rakesh Sharma",
-            avatar: "R",
-            date: "2024-04-28",
-            content: "Congratulations to all students who participated in the recent coding contest! 🎉\n\nDon't forget to check the leaderboard and claim your certificates from the mentor's desk."
-        },
-        {
-            author: "Ms. Shweta Verma",
-            avatar: "S",
-            date: "2024-04-26",
-            content: "Upcoming test on Algorithms will be held on 2nd May. Please revise all sorting and searching algorithms. Best of luck!"
-        },
-        {
-            author: "Dev Team",
-            avatar: "D",
-            date: "2024-04-25",
-            content: "🚀 New Feature: You can now view your performance graph in the History section. More analytics coming soon!"
-        }
-    ];
-
-    // Render announcements
-    const list = document.getElementById('announcementsList');
-    announcements.forEach(a => {
-        const card = document.createElement('div');
-        card.className = 'announcement-card';
-        card.innerHTML = `
-            <div class="announcement-author">
-                <div class="announcement-avatar">${a.avatar}</div>
-                <div class="announcement-author-info">
-                    <span class="announcement-author-name">${a.author}</span>
-                    <span class="announcement-date"><i class="fa fa-calendar"></i> ${a.date}</span>
-                </div>
-            </div>
-            <div class="announcement-content">${a.content.replace(/\n/g, '<br>')}</div>
-        `;
-        list.appendChild(card);
-    });
-    </script>
 </body>
 </html>

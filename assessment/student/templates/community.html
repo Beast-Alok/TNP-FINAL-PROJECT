@@ -40,8 +40,9 @@
             {% endfor %}
         {% elif user %}
             <h1>Community <i class="fa fa-users" style="color:#6366f1"></i></h1>
-            <!-- Community Rules & Agreement -->
-            <div class="community-post-card" style="background:rgba(255,255,255,0.97); border-left: 6px solid #ef4444; margin-bottom: 2rem;">
+            {% if not community %}
+            <!-- Community Rules & Agreement (show only if not accepted) -->
+            <div class="community-post-card" id="community-rules-card" style="background:rgba(255,255,255,0.97); border-left: 6px solid #ef4444; margin-bottom: 2rem;">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
                     <i class="fa fa-gavel" style="color:#ef4444;font-size:1.5rem;"></i>
                     <span style="font-weight:700;font-size:1.15rem;color:#ef4444;">Community Rules & Agreement</span>
@@ -67,17 +68,17 @@
                     </button>
                 </div>
             </div>
+            {% endif %}
             <!-- Post Doubt Form -->
             <div class="community-post-card">
-                <form method="post" class="doubt-form">
+                <form method="post" class="doubt-form" {% if not community %}style="pointer-events:none;opacity:0.5;"{% endif %}>
                     {% csrf_token %}
                     <div class="doubt-form-header">
-                        <!-- <div class="user-avatar">{{ user.first_name|slice:":1"|upper }}</div> -->
-                        <div class="user-avatar">A</div>
+                        <div class="user-avatar">{{ user.studentprofile.name|slice:":1"|upper }}</div>
                         <span class="doubt-form-username">{{ user.username }}</span>
                     </div>
-                    <textarea name="doubt" class="doubt-input" placeholder="Post your doubt here..." required></textarea>
-                    <button type="submit" class="doubt-submit-btn"><i class="fa fa-paper-plane"></i> Post Doubt</button>
+                    <textarea name="content" class="doubt-input" placeholder="Post your doubt here..." required {% if not community %}disabled{% endif %}></textarea>
+                    <button type="submit" class="doubt-submit-btn" {% if not community %}disabled{% endif %}><i class="fa fa-paper-plane"></i> Post Doubt</button>
                 </form>
             </div>
 
@@ -86,28 +87,28 @@
                 {% for doubt in doubts %}
                 <div class="community-card">
                     <div class="community-card-header">
-                        <!-- <div class="user-avatar">{{ doubt.user.first_name|slice:":1"|upper }}</div> -->
-                        <div class="user-avatar">A</div>
-                        <span class="community-username">{{ doubt.user.username }}</span>
+                        <div class="user-avatar">{{ doubt.author.first_name|default:doubt.author.username|first|upper }}</div>
+                        <span class="community-username">{{ doubt.author.username }}</span>
                         <span class="community-date">{{ doubt.created_at|date:"M d, Y H:i" }}</span>
                     </div>
-                    <div class="community-doubt-text">{{ doubt.text }}</div>
+                    <div class="community-doubt-text">{{ doubt.content|linebreaksbr }}</div>
                     <div class="community-replies">
                         {% for reply in doubt.replies.all %}
                         <div class="community-reply">
-                            <span class="reply-username">{{ reply.user.username }}</span>
-                            <span class="reply-text">{{ reply.text }}</span>
+                            <span class="reply-username">{{ reply.author.username }}</span>
+                            <span class="reply-date">({{ reply.created_at|date:"M d, Y H:i" }})</span>
+                            <span class="reply-text">{{ reply.content }}</span>
                         </div>
                         {% empty %}
                         <div class="no-replies">No replies yet.</div>
                         {% endfor %}
                     </div>
                     <!-- Reply Form -->
-                    <form method="post" class="reply-form">
+                    <form method="post" class="reply-form" {% if not community %}style="pointer-events:none;opacity:0.5;"{% endif %}>
                         {% csrf_token %}
                         <input type="hidden" name="doubt_id" value="{{ doubt.id }}">
-                        <input type="text" name="reply" class="reply-input" placeholder="Reply to this doubt..." required>
-                        <button type="submit" class="reply-btn"><i class="fa fa-reply"></i> Reply</button>
+                        <input type="text" name="reply" class="reply-input" placeholder="Reply to this doubt..." required {% if not community %}disabled{% endif %}>
+                        <button type="submit" class="reply-btn" {% if not community %}disabled{% endif %}><i class="fa fa-reply"></i> Reply</button>
                     </form>
                 </div>
                 {% endfor %}
@@ -120,7 +121,6 @@
         {% endif %}
     </div>
     <script>
-        // Enable the button only if checkbox is checked
         const agreeCheckbox = document.getElementById('community-agree');
         const agreeBtn = document.getElementById('agree-btn');
         if (agreeCheckbox && agreeBtn) {
@@ -128,11 +128,76 @@
                 agreeBtn.disabled = !this.checked;
             });
             agreeBtn.addEventListener('click', function() {
-                // You can add logic here to hide the rules card or store agreement in local/session storage
-                this.closest('.community-post-card').style.display = 'none';
+                // Optionally, send AJAX to backend to save acceptance
+                fetch("{% url 'accept_community_rules' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                }).then(() => {
+                    document.getElementById('community-rules-card').style.display = 'none';
+                    // Optionally, enable the form here if you want instant UX
+                    document.querySelector('.doubt-form').style.pointerEvents = '';
+                    document.querySelector('.doubt-form').style.opacity = '';
+                    document.querySelector('.doubt-input').disabled = false;
+                    document.querySelector('.doubt-submit-btn').disabled = false;
+                });
             });
         }
+
+        document.querySelector('.doubt-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+
+            fetch("", {
+                method: "POST",
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Prepend new doubt to the list
+                    document.querySelector('.community-cards-flex').insertAdjacentHTML('afterbegin', data.html);
+                    form.reset();
+                } else {
+                    alert('Failed to post doubt.');
+                }
+            });
+        });
+
+        document.querySelectorAll('.reply-form').forEach(function(replyForm) {
+            replyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                const formData = new FormData(form);
+
+                fetch("", {
+                    method: "POST",
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        // Append new reply to the replies div
+                        form.parentElement.querySelector('.community-replies').insertAdjacentHTML('beforeend', data.html);
+                        form.reset();
+                    } else {
+                        alert('Failed to post reply.');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
-``` 

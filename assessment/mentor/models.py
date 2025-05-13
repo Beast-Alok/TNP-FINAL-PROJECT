@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 class MentorProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(max_length=100, blank=True)
     college = models.CharField(max_length=100, blank=True)
     mobile = models.CharField(max_length=15, blank=True)
     post = models.CharField(max_length=100, blank=True)

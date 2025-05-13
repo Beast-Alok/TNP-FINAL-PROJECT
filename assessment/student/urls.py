@@ -8,4 +8,5 @@ urlpatterns = [
     path('history/', views.history, name='history'),
     path('announcement/', views.announcement, name='announcement'),
     path('community/', views.community, name='community'),
+    path('accept_community_rules', views.accept_community_rules, name='accept_community_rules')
 ]

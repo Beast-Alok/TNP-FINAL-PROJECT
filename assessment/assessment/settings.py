@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-q(c&)(#d4^9s7g(pl(5dme&ph4hw@w3y8lr8%@2bicpp-!h9r^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.4','127.0.0.1']
 
 
 # Application definition
@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'student',
     'mentor',
     'testportal',
+    'announcements_manager',
+    'community_manager',
     'django_celery_results',
     'django_cleanup.apps.CleanupConfig',
 ]

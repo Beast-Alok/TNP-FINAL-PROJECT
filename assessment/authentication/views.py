@@ -24,38 +24,35 @@ def login_fun(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            try:
-                if mentor_login:  # If the checkbox is selected
-                    # Check if the user is a mentor (you may need a MentorProfile model or a flag in the User model)
-                    if hasattr(user, 'mentorprofile'):  # Example check for a MentorProfile
-                        login(request, user)
-                        # messages.success(request, "Mentor login successful!")
-                        return redirect('mentorhome')  # Redirect to the mentor page
-                    else:
-                        messages.error(request, "You are not registered as a mentor.")
-                        return redirect('login')
+            if mentor_login:  # If the checkbox is selected
+                # Check if the user is a mentor (you may need a MentorProfile model or a flag in the User model)
+                if hasattr(user, 'mentorprofile'):  # Example check for a MentorProfile
+                    login(request, user)
+                    # messages.success(request, "Mentor login successful!")
+                    return redirect('mentorhome')  # Redirect to the mentor page
                 else:
-                    # Handle student login
-                    if hasattr(user, 'studentprofile'):  # Example check for a StudentProfile
-                        profile = StudentProfile.objects.get(user=user)
-                        if profile.is_verified:
-                            if not profile.is_approved:
-                                messages.error(request, "Your account is not approved yet. Please wait for admin approval.")
-                                return redirect('login')
-                            else:
-                                login(request, user)
-                                return redirect('home')  # Redirect to the home page
-                        else:
-                            messages.error(request, "Your email is not verified. Please verify your email.")
+                    messages.error(request, "You are not registered as a mentor.")
+                    return redirect('login')
+            else:
+                if hasattr(user, 'studentprofile'):  # Example check for a StudentProfile
+                    profile = StudentProfile.objects.get(user=user)
+                    if profile.is_verified:
+                        if not profile.is_approved:
+                            messages.error(request, "Your account is not approved yet. Please wait for admin approval.")
                             return redirect('login')
-                    
-                    elif not hasattr(user, 'studentprofile') and not hasattr(user, 'mentorprofile'):
-                        login(request, user)
-                        return redirect('admin_home') # Redirect to admin home if the user is neither a student nor a mentor
-            
-            except StudentProfile.DoesNotExist:
-                messages.error(request, "User profile not found. Please contact support.")
-                return redirect('login')
+                        else:
+                            login(request, user)
+                            return redirect('home')  # Redirect to the home page
+                    else:
+                        messages.error(request, "Your email is not verified. Please verify your email.")
+                        return redirect('login')
+                
+                elif not hasattr(user, 'studentprofile') and not hasattr(user, 'mentorprofile'):
+                    login(request, user)
+                    return redirect('admin_home') # Redirect to admin home if the user is neither a student nor a mentor
+                else:
+                    messages.error(request, "User profile not found. Please contact support.")
+                    return redirect('login')
         else:
             messages.error(request, "Invalid username or password.")
             return redirect('login')
@@ -69,7 +66,7 @@ def register_fun(request):
             college_id = None  # Handle the case where no file is uploaded
 
         # Extract form data
-        first_name = request.POST['name']
+        name = request.POST['name']
         college = request.POST['college']
         mobile = request.POST['mobile']
         branch = request.POST['branch']
@@ -99,15 +96,15 @@ def register_fun(request):
 
         # Save the user
         user = User.objects.create(
-            first_name=first_name,
             username=username,
             password=hashed_password,  # Store hashed password
-            email=email,
         )
 
         user.save()
         pfp = StudentProfile.objects.create(
             user=user,
+            name=name,
+            email=email,
             college=college,
             mobile=mobile,
             branch=branch,

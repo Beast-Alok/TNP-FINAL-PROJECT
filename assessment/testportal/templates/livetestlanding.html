@@ -30,6 +30,15 @@
       <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4a1.svg" class="w-7 h-7" alt="logo" />
       <h1 class="text-2xl font-extrabold text-white tracking-wide drop-shadow">Live Test Waiting Room</h1>
     </div>
+    {% if ismentor %}
+    <form action="{% url 'start_test' %}" method="POST" class="flex items-center gap-2">
+      {% csrf_token %}
+      <input type="hidden" name="test_code" value="{{ test_code }}">
+      <button class="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold py-2 px-4 rounded shadow transition" id="startTestBtn">
+        <i class="fa fa-play mr-1"></i> Start Test
+      </button>
+    </form>
+    {% endif %}
   </div>
 
   <!-- Main Content -->
@@ -38,7 +47,7 @@
     <!-- Waiting List Card -->
     <div class="w-full max-w-md bg-white/90 p-8 rounded-3xl shadow-md border border-blue-100 text-center mb-10">
       <h2 class="text-2xl font-bold text-blue-700 mb-2">Students in Waiting Room</h2>
-      <div class="text-6xl font-extrabold text-blue-500 mb-2" id="waiting-count">12</div>
+      <div class="text-6xl font-extrabold text-blue-500 mb-2" id="waiting-count">0</div>
       <div class="text-gray-500 text-lg">waiting to start the test</div>
     </div>
     <!-- Loading Animation & Message -->
@@ -59,12 +68,29 @@
 
   <script>
     // Example: Simulate waiting count update (replace with real-time logic as needed)
-    let count = 12;
+    let count = 0;
     setInterval(() => {
       // For demo, just pulse the number
       document.getElementById('waiting-count').classList.toggle('text-blue-700');
       document.getElementById('waiting-count').classList.toggle('text-blue-500');
     }, 800);
+
+    const isMentor = '{{ ismentor }}';
+    if (isMentor == 'False') {
+      function pollTestStarted() {
+        fetch("{% url 'check_test_started' test_code %}")
+          .then(response => response.json())
+          .then(data => {
+            if (data.started) {
+              // Redirect to test portal page
+              window.location.href = "/livetestportal/portal/?test_code={{ test_code }}";
+            } else {
+              setTimeout(pollTestStarted, 3000); // poll every 3 seconds
+            }
+          });
+      }
+      setTimeout(pollTestStarted, 3000);
+    }
   </script>
 </body>
 </html>

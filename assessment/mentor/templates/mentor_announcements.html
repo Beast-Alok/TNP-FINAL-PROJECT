@@ -110,34 +110,13 @@
             {% elif user %}
                 <main class="col-md-10 ms-sm-auto dashboard-content">
                     <h2 class="mb-4">Announcements</h2>
-                    <!-- Announcements List -->
-                    <div id="announcementsList">
-                        <!-- Sample Announcements -->
-                        <div class="card announcement-card shadow-sm">
-                            <div class="card-body">
-                                <p class="card-text">The next assessment will be held on 10th May. Please prepare accordingly.</p>
-                                <div class="author">By <strong>Dr. Sharma</strong> on 2025-05-01</div>
-                            </div>
-                        </div>
-                        <div class="card announcement-card shadow-sm">
-                            <div class="card-body">
-                                <p class="card-text">Results for the last test have been published. Check the reports section.</p>
-                                <div class="author">By <strong>Ms. Verma</strong> on 2025-04-28</div>
-                            </div>
-                        </div>
-                        <div class="card announcement-card shadow-sm">
-                            <div class="card-body">
-                                <p class="card-text">There will be a doubt clearing session on Friday at 3 PM.</p>
-                                <div class="author">By <strong>Mr. Singh</strong> on 2025-04-25</div>
-                            </div>
-                        </div>
-                    </div>
                     <!-- New Announcement Button -->
                     <div class="text-center">
                         <button id="showFormBtn" class="btn btn-primary mb-3">+ Create New Announcement</button>
                     </div>
                     <!-- New Announcement Form -->
                     <form id="newAnnouncementForm" class="card p-3 shadow-sm mb-4" method="post" action="/mentor/mentor_announcements/">
+                        {% csrf_token %}
                         <div class="mb-3">
                             <textarea class="form-control" name="announcement_text" rows="3" placeholder="Write your announcement here..." required></textarea>
                         </div>
@@ -146,6 +125,17 @@
                             <button type="button" id="cancelFormBtn" class="btn btn-secondary ms-2">Cancel</button>
                         </div>
                     </form>
+                    <!-- Announcements List -->
+                    <div id="announcementsList">
+                        {% for announ in announs %}
+                        <div class="card announcement-card shadow-sm">
+                            <div class="card-body">
+                                <p class="card-text">{{ announ.message }}</p>
+                                <div class="author">By <strong>{{ announ.author }}</strong> on {{ announ.created_at|date:"Y-m-d H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </main>
             {% endif %}
         </div>
@@ -166,6 +156,42 @@
         cancelFormBtn.addEventListener('click', () => {
             newAnnouncementForm.style.display = 'none';
             showFormBtn.style.display = 'inline-block';
+        });
+
+        document.getElementById('newAnnouncementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Add new announcement to the top of the list
+                    const list = document.getElementById('announcementsList');
+                    const newCard = document.createElement('div');
+                    newCard.className = 'card announcement-card shadow-sm';
+                    newCard.innerHTML = `
+                        <div class="card-body">
+                            <p class="card-text">${data.message}</p>
+                            <div class="author">By <strong>${data.author}</strong> on ${data.created_at}</div>
+                        </div>
+                    `;
+                    list.prepend(newCard);
+                    form.reset();
+                    form.style.display = 'none';
+                    document.getElementById('showFormBtn').style.display = 'inline-block';
+                } else {
+                    alert('Failed to add announcement.');
+                }
+            });
         });
     </script>
 </body>

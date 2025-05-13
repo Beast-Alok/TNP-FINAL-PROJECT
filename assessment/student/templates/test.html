@@ -66,8 +66,9 @@
                         <i class="fa fa-key"></i>
                         <span>Enter Test ID</span>
                     </div>
-                    <form class="testid-form" autocomplete="off">
-                        <input type="text" class="testid-input" placeholder="Enter Test ID" required>
+                    <form class="testid-form" autocomplete="off" action="/livetestportal/" method="post">
+                        {% csrf_token %}
+                        <input type="text" class="testid-input" name="test_code" placeholder="Enter Test ID" required>
                         <button type="submit" class="testid-btn"><i class="fa fa-arrow-right"></i> Start Test</button>
                     </form>
                     <div class="testid-hint">
@@ -77,15 +78,5 @@
             </div>
         {% endif %}
     </div>
-    <script>
-        document.querySelector('.testid-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const testId = document.querySelector('.testid-input').value.trim();
-            if(testId) {
-                alert('Connecting to test with ID: ' + testId);
-                // You can redirect or handle test start here
-            }
-        });
-    </script>
 </body>
 </html>

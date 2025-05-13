@@ -100,18 +100,15 @@
             {% elif user %}
                 <main class="col-md-10 ms-sm-auto dashboard-content">
                     <h2 class="mb-4">Create a New Test</h2>
-                    <form class="card p-4 shadow-sm bg-white">
+                    <form class="card p-4 shadow-sm bg-white" method="POST" action="/mentor/">
+                        {% csrf_token %}
                         <div class="mb-3">
                             <label for="testTitle" class="form-label">Test Title</label>
-                            <input type="text" class="form-control" id="testTitle" placeholder="Enter test title" required>
+                            <input type="text" name="test" class="form-control" id="testTitle" placeholder="Enter test title" required>
                         </div>
                         <div class="mb-3">
                             <label for="testDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="testDescription" rows="3" placeholder="Enter test description" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="testDate" class="form-label">Test Date</label>
-                            <input type="date" class="form-control" id="testDate" required style="width: auto;">
+                            <textarea class="form-control" name="test_desc" id="testDescription" rows="3" placeholder="Enter test description" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Create Test</button>
                     </form>
